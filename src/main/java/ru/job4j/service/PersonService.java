@@ -30,4 +30,8 @@ public class PersonService {
     public List<Person> findAll() {
         return personRepository.findAll();
     }
+
+    public Optional<Person> findByUsername(String username) {
+        return personRepository.findByUsername(username);
+    }
 }

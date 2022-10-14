@@ -1,9 +1,9 @@
 create table person (
     id serial primary key not null,
-    login varchar(2000),
+    username varchar(2000),
     password varchar(2000)
 );
 
-insert into person (login, password) values ('parsentev', '123');
-insert into person (login, password) values ('ban', '123');
-insert into person (login, password) values ('ivan', '123');
+insert into person (username, password) values ('parsentev', '$2a$10$UErrbEfFdNnvDMmtjbeByu0lQslllMBuUqIiB5Jn4AtBmc2smbb1O');
+insert into person (username, password) values ('ban', '$2a$10$UErrbEfFdNnvDMmtjbeByu0lQslllMBuUqIiB5Jn4AtBmc2smbb1O');
+insert into person (username, password) values ('ivan', '$2a$10$UErrbEfFdNnvDMmtjbeByu0lQslllMBuUqIiB5Jn4AtBmc2smbb1O');
