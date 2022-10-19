@@ -8,6 +8,7 @@ import ru.job4j.domain.Person;
 import ru.job4j.service.PersonService;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/person")
@@ -27,11 +28,9 @@ public class PersonController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Person> findById(@PathVariable int id) {
-        var person = this.personService.findById(id);
-        if (person.isEmpty()) {
-            throw new NullPointerException("Username and Password cannot be empty!");
-        }
-        return new ResponseEntity<>(person.get(), HttpStatus.OK);
+        return new ResponseEntity<>(
+                this.personService.findById(id).orElseThrow(
+                        () -> new NoSuchElementException("Username and Password cannot be empty!")), HttpStatus.OK);
     }
 
     @PostMapping("/sign-up")
