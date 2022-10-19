@@ -10,6 +10,7 @@ import ru.job4j.domain.Person;
 import ru.job4j.domain.dto.PersonDTO;
 import ru.job4j.service.PersonService;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -43,17 +44,8 @@ public class PersonController {
     }
 
     @PostMapping("/sign-up")
-    public ResponseEntity<Person> create(@RequestBody PersonDTO personDTO) {
+    public ResponseEntity<Person> create(@Valid @RequestBody PersonDTO personDTO) {
         Person person = convertToPerson(personDTO);
-        if (person.getPassword().isEmpty() || person.getUsername().isEmpty()) {
-            throw new NullPointerException("Username and Password cannot be empty!");
-        }
-        if (person.getUsername().length() < 3 || person.getUsername().length() > 16) {
-            throw new IllegalArgumentException("The name must be no shorter than three and no longer than sixteen characters!");
-        }
-        if (person.getPassword().length() < 8) {
-            throw new IllegalArgumentException("The password cannot be less than eight characters!");
-        }
         if (personService.findByUsername(person.getUsername()).isPresent()) {
             throw new IllegalArgumentException("This name already exists!");
         }
@@ -62,7 +54,7 @@ public class PersonController {
     }
 
     @PutMapping("/")
-    public ResponseEntity<Void> update(@RequestBody PersonDTO personDTO) {
+    public ResponseEntity<Void> update(@Valid @RequestBody PersonDTO personDTO) {
         this.personService.save(convertToPerson(personDTO));
         return ResponseEntity.ok().build();
     }
