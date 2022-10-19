@@ -1,29 +1,38 @@
 package ru.job4j.controller;
 
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import ru.job4j.domain.Person;
+import ru.job4j.domain.dto.PersonDTO;
 import ru.job4j.service.PersonService;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/person")
 public class PersonController {
     private final PersonService personService;
     private final BCryptPasswordEncoder encoder;
+    private final ModelMapper modelMapper;
 
-    public PersonController(PersonService personService, BCryptPasswordEncoder encoder) {
+    @Autowired
+    public PersonController(PersonService personService, BCryptPasswordEncoder encoder, ModelMapper modelMapper) {
         this.personService = personService;
         this.encoder = encoder;
+        this.modelMapper = modelMapper;
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<Person>> findAll() {
-        return new ResponseEntity<>(personService.findAll(), HttpStatus.OK);
+    public ResponseEntity<List<PersonDTO>> findAll() {
+        return new ResponseEntity<>(
+                personService.findAll().stream().map(this::convertToPersonDTO).collect(Collectors.toList()),
+                HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
@@ -34,7 +43,8 @@ public class PersonController {
     }
 
     @PostMapping("/sign-up")
-    public ResponseEntity<Person> create(@RequestBody Person person) {
+    public ResponseEntity<Person> create(@RequestBody PersonDTO personDTO) {
+        Person person = convertToPerson(personDTO);
         if (person.getPassword().isEmpty() || person.getUsername().isEmpty()) {
             throw new NullPointerException("Username and Password cannot be empty!");
         }
@@ -52,8 +62,8 @@ public class PersonController {
     }
 
     @PutMapping("/")
-    public ResponseEntity<Void> update(@RequestBody Person person) {
-        this.personService.save(person);
+    public ResponseEntity<Void> update(@RequestBody PersonDTO personDTO) {
+        this.personService.save(convertToPerson(personDTO));
         return ResponseEntity.ok().build();
     }
 
@@ -63,5 +73,13 @@ public class PersonController {
         person.setId(id);
         this.personService.delete(person);
         return ResponseEntity.ok().build();
+    }
+
+    public Person convertToPerson(PersonDTO personDTO) {
+        return modelMapper.map(personDTO, Person.class);
+    }
+
+    public PersonDTO convertToPersonDTO(Person person) {
+        return modelMapper.map(person, PersonDTO.class);
     }
 }

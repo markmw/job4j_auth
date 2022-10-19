@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -17,4 +18,6 @@ public class Person {
     private int id;
     private String username;
     private String password;
+    private LocalDateTime created;
+    private boolean enabled;
 }
